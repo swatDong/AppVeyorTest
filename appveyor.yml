@@ -1,0 +1,45 @@
+version: 1.0.{build}
+branches:
+  only:
+  - master
+skip_tags: true
+
+environment:
+  # Use Python 3.5
+  PYTHON: "C:/Python35"
+  SPHINXBUILD: "%PYTHON%/scripts/sphinx-build.exe"
+
+  github_access_token:
+    secure: 8GKkrghj8KAhgmIxGneHfLGuY5V1o+Q3eptS91w4wlMh99IZi7jUefeW/IdIPKGX
+
+init:
+    - "%PYTHON%/python.exe -m pip install --upgrade pip"
+
+    # Install pywin32-ctypes 0.0.1 due to https://github.com/enthought/pywin32-ctypes/issues/60
+    - "%PYTHON%/python.exe -m pip install pywin32-ctypes==0.0.1"
+
+    # Install cryptography (1.8.1) to avoid 'openssl' error
+    - "%PYTHON%/python.exe -m pip install cryptography==1.8.1"
+    
+    # Install requests (2.14.1) since msrest requires requests~=2.14.1
+    - "%PYTHON%/python.exe -m pip install requests==2.14.1"
+
+    # Install sphinx (1.5.5) and its extensions
+    - "%PYTHON%/python.exe -m pip install sphinx==1.5.5"
+    - "%PYTHON%/python.exe -m pip install sphinx-docfx-yaml"
+    - "%PYTHON%/python.exe -m pip install sphinx_rtd_theme"
+    - "%PYTHON%/python.exe -m pip show sphinx"
+
+clone_script:
+    - git config --global core.autocrlf true
+    - git config core.autocrlf
+    - cd c:/projects
+    - git clone -q --branch=master https://github.com/Azure/azure-sdk-for-python.git
+
+install:
+    - cd c:/projects/azure-sdk-for-python
+
+build: off
+
+on_success:
+    - cd c:/projects/azure-sdk-for-python/doc
